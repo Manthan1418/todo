@@ -28,7 +28,9 @@ async function login() {
             currentUser = await response.json();
             window.location.href = 'todo.html';
         } else {
-            alert('Login failed');
+            const errorDiv = document.getElementById('login-error');
+            errorDiv.textContent = 'Login failed. Please check your credentials.';
+            errorDiv.style.display = 'block';
         }
     } catch (error) {
         console.error('Error:', error);
@@ -39,8 +41,12 @@ async function register() {
     const username = document.getElementById('register-username').value;
     const password = document.getElementById('register-password').value;
     
+    const errorDiv = document.getElementById('register-error');
+    errorDiv.style.display = 'none';
+    
     if (!username || !password) {
-        alert('Username and password are required');
+        errorDiv.textContent = 'Username and password are required';
+        errorDiv.style.display = 'block';
         return;
     }
 
@@ -55,10 +61,19 @@ async function register() {
         
         const result = await response.json();
         if (response.ok && result.success) {
-            alert(result.message);
-            showLogin();
+            errorDiv.style.display = 'none';
+            const successDiv = document.getElementById('register-error');
+            successDiv.className = 'success-message';
+            successDiv.textContent = result.message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                showLogin();
+                successDiv.style.display = 'none';
+                successDiv.className = 'error-message';
+            }, 2000);
         } else {
-            alert(result.error || 'Registration failed');
+            errorDiv.textContent = result.error || 'Registration failed';
+            errorDiv.style.display = 'block';
         }
     } catch (error) {
         console.error('Registration error:', error);
